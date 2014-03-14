@@ -11,7 +11,7 @@
 
 @synthesize firebaseURL, currentUserId, presenceManager, chatManager, channelManager;
 
-+ (FireSuite *) singleton {
++ (FireSuite *) suiteManager {
     static dispatch_once_t pred;
     static FireSuite *shared = nil;
     

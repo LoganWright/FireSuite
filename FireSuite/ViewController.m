@@ -26,7 +26,7 @@
     //  *** // - Call this before using any other aspects!
     
     NSString * firebaseMainURL = @"https://someFirebase.firebaseIO.com/";
-    FireSuite * fireSuite = [FireSuite singleton];
+    FireSuite * fireSuite = [FireSuite suiteManager];
     fireSuite.firebaseURL = firebaseMainURL;
     fireSuite.currentUserId = @"currentUserId";
     
@@ -58,7 +58,7 @@
 #pragma mark CHANNEL MANAGER
     
     // Get Channel Manager
-    FSChannelManager * channelManager = [FireSuite singleton].channelManager;
+    FSChannelManager * channelManager = fireSuite.channelManager;
     
     // Observe Current User's Alert's Channel
     //
@@ -102,7 +102,7 @@
 }
 
 - (void) launchNewChatSessionForChatId:(NSString *)chatId {
-    FireSuite * fireSuite = [FireSuite singleton];
+    FireSuite * fireSuite = [FireSuite suiteManager];
     FSChatManager * chatManager = fireSuite.chatManager;
     chatManager.chatId = chatId; // chat id of new session
     chatManager.delegate = self; // who to send the messages
@@ -119,7 +119,7 @@
 }
 
 - (void) endChat {
-    FireSuite * fireSuite = [FireSuite singleton];
+    FireSuite * fireSuite = [FireSuite suiteManager];
     FSChatManager * chatManager = fireSuite.chatManager;
     
     [chatManager endChatSessionWithCompletionBlock:^{

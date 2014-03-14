@@ -27,10 +27,10 @@
 		80D38CFD18D2D3A1002AEF2C /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D38CF818D2D3A1002AEF2C /* libicucore.dylib */; };
 		80D38CFE18D2D3A1002AEF2C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D38CF918D2D3A1002AEF2C /* Security.framework */; };
 		80D38CFF18D2D3A1002AEF2C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D38CFA18D2D3A1002AEF2C /* SystemConfiguration.framework */; };
-		80D38D0818D2D3C5002AEF2C /* FireSuite.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D0018D2D3C5002AEF2C /* FireSuite.m */; };
-		80D38D0918D2D3C5002AEF2C /* FSPresenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D0118D2D3C5002AEF2C /* FSPresenceManager.m */; };
-		80D38D0A18D2D3C5002AEF2C /* FSChatManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D0418D2D3C5002AEF2C /* FSChatManager.m */; };
-		80D38D0B18D2D3C5002AEF2C /* FSChannelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D0718D2D3C5002AEF2C /* FSChannelManager.m */; };
+		80D38D1618D36A10002AEF2C /* FireSuite.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D0F18D36A10002AEF2C /* FireSuite.m */; };
+		80D38D1718D36A10002AEF2C /* FSChannelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D1118D36A10002AEF2C /* FSChannelManager.m */; };
+		80D38D1818D36A10002AEF2C /* FSChatManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D1318D36A10002AEF2C /* FSChatManager.m */; };
+		80D38D1918D36A10002AEF2C /* FSPresenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D1518D36A10002AEF2C /* FSPresenceManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,14 +69,14 @@
 		80D38CF818D2D3A1002AEF2C /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		80D38CF918D2D3A1002AEF2C /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		80D38CFA18D2D3A1002AEF2C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		80D38D0018D2D3C5002AEF2C /* FireSuite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FireSuite.m; sourceTree = "<group>"; };
-		80D38D0118D2D3C5002AEF2C /* FSPresenceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSPresenceManager.m; sourceTree = "<group>"; };
-		80D38D0218D2D3C5002AEF2C /* FSPresenceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSPresenceManager.h; sourceTree = "<group>"; };
-		80D38D0318D2D3C5002AEF2C /* FSChatManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSChatManager.h; sourceTree = "<group>"; };
-		80D38D0418D2D3C5002AEF2C /* FSChatManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSChatManager.m; sourceTree = "<group>"; };
-		80D38D0518D2D3C5002AEF2C /* FSChannelManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSChannelManager.h; sourceTree = "<group>"; };
-		80D38D0618D2D3C5002AEF2C /* FireSuite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FireSuite.h; sourceTree = "<group>"; };
-		80D38D0718D2D3C5002AEF2C /* FSChannelManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSChannelManager.m; sourceTree = "<group>"; };
+		80D38D0E18D36A10002AEF2C /* FireSuite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FireSuite.h; sourceTree = "<group>"; };
+		80D38D0F18D36A10002AEF2C /* FireSuite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FireSuite.m; sourceTree = "<group>"; };
+		80D38D1018D36A10002AEF2C /* FSChannelManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSChannelManager.h; sourceTree = "<group>"; };
+		80D38D1118D36A10002AEF2C /* FSChannelManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSChannelManager.m; sourceTree = "<group>"; };
+		80D38D1218D36A10002AEF2C /* FSChatManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSChatManager.h; sourceTree = "<group>"; };
+		80D38D1318D36A10002AEF2C /* FSChatManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSChatManager.m; sourceTree = "<group>"; };
+		80D38D1418D36A10002AEF2C /* FSPresenceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSPresenceManager.h; sourceTree = "<group>"; };
+		80D38D1518D36A10002AEF2C /* FSPresenceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSPresenceManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,7 +148,7 @@
 		80D38CC518D2D323002AEF2C /* FireSuite */ = {
 			isa = PBXGroup;
 			children = (
-				80D38D0C18D2D3CF002AEF2C /* FireSuite */,
+				80D38D0D18D36A10002AEF2C /* FireSuite */,
 				80D38CCE18D2D323002AEF2C /* AppDelegate.h */,
 				80D38CCF18D2D323002AEF2C /* AppDelegate.m */,
 				80D38CD118D2D323002AEF2C /* Main.storyboard */,
@@ -189,19 +189,19 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		80D38D0C18D2D3CF002AEF2C /* FireSuite */ = {
+		80D38D0D18D36A10002AEF2C /* FireSuite */ = {
 			isa = PBXGroup;
 			children = (
-				80D38D0618D2D3C5002AEF2C /* FireSuite.h */,
-				80D38D0018D2D3C5002AEF2C /* FireSuite.m */,
-				80D38D0218D2D3C5002AEF2C /* FSPresenceManager.h */,
-				80D38D0118D2D3C5002AEF2C /* FSPresenceManager.m */,
-				80D38D0318D2D3C5002AEF2C /* FSChatManager.h */,
-				80D38D0418D2D3C5002AEF2C /* FSChatManager.m */,
-				80D38D0518D2D3C5002AEF2C /* FSChannelManager.h */,
-				80D38D0718D2D3C5002AEF2C /* FSChannelManager.m */,
+				80D38D0E18D36A10002AEF2C /* FireSuite.h */,
+				80D38D0F18D36A10002AEF2C /* FireSuite.m */,
+				80D38D1018D36A10002AEF2C /* FSChannelManager.h */,
+				80D38D1118D36A10002AEF2C /* FSChannelManager.m */,
+				80D38D1218D36A10002AEF2C /* FSChatManager.h */,
+				80D38D1318D36A10002AEF2C /* FSChatManager.m */,
+				80D38D1418D36A10002AEF2C /* FSPresenceManager.h */,
+				80D38D1518D36A10002AEF2C /* FSPresenceManager.m */,
 			);
-			name = FireSuite;
+			path = FireSuite;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -301,13 +301,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80D38D1818D36A10002AEF2C /* FSChatManager.m in Sources */,
 				80D38CD618D2D323002AEF2C /* ViewController.m in Sources */,
-				80D38D0918D2D3C5002AEF2C /* FSPresenceManager.m in Sources */,
 				80D38CD018D2D323002AEF2C /* AppDelegate.m in Sources */,
-				80D38D0818D2D3C5002AEF2C /* FireSuite.m in Sources */,
+				80D38D1618D36A10002AEF2C /* FireSuite.m in Sources */,
 				80D38CCC18D2D323002AEF2C /* main.m in Sources */,
-				80D38D0B18D2D3C5002AEF2C /* FSChannelManager.m in Sources */,
-				80D38D0A18D2D3C5002AEF2C /* FSChatManager.m in Sources */,
+				80D38D1918D36A10002AEF2C /* FSPresenceManager.m in Sources */,
+				80D38D1718D36A10002AEF2C /* FSChannelManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -522,6 +522,7 @@
 				80D38CF018D2D323002AEF2C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		80D38CF118D2D323002AEF2C /* Build configuration list for PBXNativeTarget "FireSuiteTests" */ = {
 			isa = XCConfigurationList;
@@ -530,6 +531,7 @@
 				80D38CF318D2D323002AEF2C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

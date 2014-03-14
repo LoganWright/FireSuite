@@ -13,7 +13,7 @@
 
 @interface FireSuite : NSObject
 
-+ (FireSuite *) singleton;
++ (FireSuite *) suiteManager;
 
 @property (strong, nonatomic) NSString * firebaseURL;
 @property (strong, nonatomic) NSString * currentUserId;
