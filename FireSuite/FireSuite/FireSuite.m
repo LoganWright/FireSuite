@@ -47,12 +47,6 @@
 
 #pragma mark GETTERS
 
-// Presence Manager
-- (void) setPresenceManager:(FSPresenceManager *)presenceManagerToSet {
-    NSLog(@"Don't Set Presence Manager");
-    presenceManager = presenceManagerToSet;
-}
-
 - (FSPresenceManager *) presenceManager {
     FSPresenceManager * manager = [FSPresenceManager singleton];
     return manager;
