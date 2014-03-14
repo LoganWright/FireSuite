@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+#import "FireSuite.h"
+
+@interface ViewController : UIViewController <FSChatManagerDelegate>
 
 @end

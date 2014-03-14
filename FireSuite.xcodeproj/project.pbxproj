@@ -21,6 +21,16 @@
 		80D38CE118D2D323002AEF2C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D38CC318D2D323002AEF2C /* UIKit.framework */; };
 		80D38CE918D2D323002AEF2C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 80D38CE718D2D323002AEF2C /* InfoPlist.strings */; };
 		80D38CEB18D2D323002AEF2C /* FireSuiteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38CEA18D2D323002AEF2C /* FireSuiteTests.m */; };
+		80D38CF518D2D33B002AEF2C /* Firebase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D38CF418D2D33B002AEF2C /* Firebase.framework */; };
+		80D38CFB18D2D3A1002AEF2C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D38CF618D2D3A1002AEF2C /* CFNetwork.framework */; };
+		80D38CFC18D2D3A1002AEF2C /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D38CF718D2D3A1002AEF2C /* libc++.dylib */; };
+		80D38CFD18D2D3A1002AEF2C /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D38CF818D2D3A1002AEF2C /* libicucore.dylib */; };
+		80D38CFE18D2D3A1002AEF2C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D38CF918D2D3A1002AEF2C /* Security.framework */; };
+		80D38CFF18D2D3A1002AEF2C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D38CFA18D2D3A1002AEF2C /* SystemConfiguration.framework */; };
+		80D38D0818D2D3C5002AEF2C /* FireSuite.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D0018D2D3C5002AEF2C /* FireSuite.m */; };
+		80D38D0918D2D3C5002AEF2C /* FSPresenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D0118D2D3C5002AEF2C /* FSPresenceManager.m */; };
+		80D38D0A18D2D3C5002AEF2C /* FSChatManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D0418D2D3C5002AEF2C /* FSChatManager.m */; };
+		80D38D0B18D2D3C5002AEF2C /* FSChannelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D38D0718D2D3C5002AEF2C /* FSChannelManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +63,20 @@
 		80D38CE618D2D323002AEF2C /* FireSuiteTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FireSuiteTests-Info.plist"; sourceTree = "<group>"; };
 		80D38CE818D2D323002AEF2C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		80D38CEA18D2D323002AEF2C /* FireSuiteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FireSuiteTests.m; sourceTree = "<group>"; };
+		80D38CF418D2D33B002AEF2C /* Firebase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Firebase.framework; sourceTree = "<group>"; };
+		80D38CF618D2D3A1002AEF2C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		80D38CF718D2D3A1002AEF2C /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
+		80D38CF818D2D3A1002AEF2C /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
+		80D38CF918D2D3A1002AEF2C /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		80D38CFA18D2D3A1002AEF2C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		80D38D0018D2D3C5002AEF2C /* FireSuite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FireSuite.m; sourceTree = "<group>"; };
+		80D38D0118D2D3C5002AEF2C /* FSPresenceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSPresenceManager.m; sourceTree = "<group>"; };
+		80D38D0218D2D3C5002AEF2C /* FSPresenceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSPresenceManager.h; sourceTree = "<group>"; };
+		80D38D0318D2D3C5002AEF2C /* FSChatManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSChatManager.h; sourceTree = "<group>"; };
+		80D38D0418D2D3C5002AEF2C /* FSChatManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSChatManager.m; sourceTree = "<group>"; };
+		80D38D0518D2D3C5002AEF2C /* FSChannelManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSChannelManager.h; sourceTree = "<group>"; };
+		80D38D0618D2D3C5002AEF2C /* FireSuite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FireSuite.h; sourceTree = "<group>"; };
+		80D38D0718D2D3C5002AEF2C /* FSChannelManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSChannelManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,9 +84,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80D38CFB18D2D3A1002AEF2C /* CFNetwork.framework in Frameworks */,
+				80D38CFC18D2D3A1002AEF2C /* libc++.dylib in Frameworks */,
+				80D38CFD18D2D3A1002AEF2C /* libicucore.dylib in Frameworks */,
+				80D38CFE18D2D3A1002AEF2C /* Security.framework in Frameworks */,
+				80D38CFF18D2D3A1002AEF2C /* SystemConfiguration.framework in Frameworks */,
 				80D38CC218D2D323002AEF2C /* CoreGraphics.framework in Frameworks */,
 				80D38CC418D2D323002AEF2C /* UIKit.framework in Frameworks */,
 				80D38CC018D2D323002AEF2C /* Foundation.framework in Frameworks */,
+				80D38CF518D2D33B002AEF2C /* Firebase.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +131,12 @@
 		80D38CBE18D2D323002AEF2C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				80D38CF618D2D3A1002AEF2C /* CFNetwork.framework */,
+				80D38CF718D2D3A1002AEF2C /* libc++.dylib */,
+				80D38CF818D2D3A1002AEF2C /* libicucore.dylib */,
+				80D38CF918D2D3A1002AEF2C /* Security.framework */,
+				80D38CFA18D2D3A1002AEF2C /* SystemConfiguration.framework */,
+				80D38CF418D2D33B002AEF2C /* Firebase.framework */,
 				80D38CBF18D2D323002AEF2C /* Foundation.framework */,
 				80D38CC118D2D323002AEF2C /* CoreGraphics.framework */,
 				80D38CC318D2D323002AEF2C /* UIKit.framework */,
@@ -112,6 +148,7 @@
 		80D38CC518D2D323002AEF2C /* FireSuite */ = {
 			isa = PBXGroup;
 			children = (
+				80D38D0C18D2D3CF002AEF2C /* FireSuite */,
 				80D38CCE18D2D323002AEF2C /* AppDelegate.h */,
 				80D38CCF18D2D323002AEF2C /* AppDelegate.m */,
 				80D38CD118D2D323002AEF2C /* Main.storyboard */,
@@ -150,6 +187,21 @@
 				80D38CE718D2D323002AEF2C /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		80D38D0C18D2D3CF002AEF2C /* FireSuite */ = {
+			isa = PBXGroup;
+			children = (
+				80D38D0618D2D3C5002AEF2C /* FireSuite.h */,
+				80D38D0018D2D3C5002AEF2C /* FireSuite.m */,
+				80D38D0218D2D3C5002AEF2C /* FSPresenceManager.h */,
+				80D38D0118D2D3C5002AEF2C /* FSPresenceManager.m */,
+				80D38D0318D2D3C5002AEF2C /* FSChatManager.h */,
+				80D38D0418D2D3C5002AEF2C /* FSChatManager.m */,
+				80D38D0518D2D3C5002AEF2C /* FSChannelManager.h */,
+				80D38D0718D2D3C5002AEF2C /* FSChannelManager.m */,
+			);
+			name = FireSuite;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -250,8 +302,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				80D38CD618D2D323002AEF2C /* ViewController.m in Sources */,
+				80D38D0918D2D3C5002AEF2C /* FSPresenceManager.m in Sources */,
 				80D38CD018D2D323002AEF2C /* AppDelegate.m in Sources */,
+				80D38D0818D2D3C5002AEF2C /* FireSuite.m in Sources */,
 				80D38CCC18D2D323002AEF2C /* main.m in Sources */,
+				80D38D0B18D2D3C5002AEF2C /* FSChannelManager.m in Sources */,
+				80D38D0A18D2D3C5002AEF2C /* FSChatManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,9 +432,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FireSuite/FireSuite-Prefix.pch";
 				INFOPLIST_FILE = "FireSuite/FireSuite-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -389,9 +450,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FireSuite/FireSuite-Prefix.pch";
 				INFOPLIST_FILE = "FireSuite/FireSuite-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
