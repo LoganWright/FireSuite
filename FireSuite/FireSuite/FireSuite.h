@@ -18,8 +18,8 @@
 @property (strong, nonatomic) NSString * firebaseURL;
 @property (strong, nonatomic) NSString * currentUserId;
 
-@property (strong, nonatomic) id chatManager;
-@property (strong, nonatomic) id presenceManager;
+@property (strong, nonatomic) FSChatManager * chatManager;
+@property (strong, nonatomic) FSPresenceManager * presenceManager;
 @property (strong, nonatomic) FSChannelManager * channelManager;
 
 @end
