@@ -91,7 +91,7 @@
     NSLog(@"loadDidFail: %@", error);
 }
 
-- (void) sendMessageDidFailWithError:(NSError *)error {
+- (void) sendMessage:(NSDictionary *)message didFailWithError:(NSError *)error {
      NSLog(@"sendMessageDidFail: %@", error);
 }
 

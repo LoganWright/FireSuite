@@ -540,7 +540,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
             if (sentToId) [self notifyUserWithId:sentToId ofMessage:message];
         }
         else {
-            [_delegate sendMessageDidFailWithError:error];
+            [_delegate sendMessage:message didFailWithError:error];
         }
     }];
     

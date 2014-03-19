@@ -30,7 +30,7 @@ FOUNDATION_EXPORT NSString *const kResponseHeader;
 /*!
  Used to notify of a failed message send
  */
-@required - (void) sendMessageDidFailWithError:(NSError *)error;
+@required - (void) sendMessage:(NSDictionary *)message didFailWithError:(NSError *)error;
 
 /*!
  A new message has been received -- will fire continually
