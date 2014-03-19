@@ -45,10 +45,10 @@
     // Monitor Other Users (for instance, a chat opponent)
     [presenceManager registerUserStatusObserver:self
                                    withSelector:@selector(userStatusDidUpdateWithId:andStatus:)
-                                      forUserId:@"userId1"];
+                                      forUserId:@"anotherUserId"];
     [presenceManager registerUserStatusObserver:self
                                    withSelector:@selector(userStatusDidUpdateWithId:andStatus:)
-                                      forUserId:@"userId2"];
+                                      forUserId:@"yetAnotherUserId"];
     
     
 #pragma mark CHANNEL MANAGER
