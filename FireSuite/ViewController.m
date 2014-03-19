@@ -79,8 +79,7 @@
     // Create
     
     // Set CustomId to nil for AutoId
-    
-    [chatManager createNewChatForUsers:@[@"currentUserId", @"user2id"] withCustomId:@"testId" andCompletionBlock:^(NSString *newChatId, NSError *error) {
+    [chatManager createNewChatForUsers:@[@"currentUserId", @"anotherUserId"] withCustomId:nil andCompletionBlock:^(NSString *newChatId, NSError *error) {
         NSLog(@"Created New Chat With Id: %@", newChatId);
         [self launchNewChatSessionForChatId:newChatId];
     }];

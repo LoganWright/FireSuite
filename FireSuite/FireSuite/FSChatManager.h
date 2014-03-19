@@ -71,7 +71,7 @@ FOUNDATION_EXPORT NSString *const kResponseHeader;
 #pragma mark CREATE NEW CHAT
 
 /*!
- Create a new chat for @param chatters - array of 2 user Id's @param customId - a customId to assign the chat.  Will auto-assign id if set to nil.
+ Create a new chat for @param users - array of 2 user Id's @param customId - a customId to assign the chat.  Will auto-assign id if set to nil.
  */
 - (void) createNewChatForUsers:(NSArray *)users
                   withCustomId:(NSString *)customId
