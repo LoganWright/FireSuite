@@ -92,7 +92,7 @@
 }
 
 - (void) sendMessage:(NSDictionary *)message didFailWithError:(NSError *)error {
-     NSLog(@"sendMessageDidFail: %@", error);
+     NSLog(@"sendMessage: %@ DidFail: %@", message, error);
 }
 
 /*
