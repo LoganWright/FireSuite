@@ -17,13 +17,18 @@
 
 + (FSPresenceManager *) singleton;
 
+/*!
+ Firebase URL -- set by FireSuite
+ */
 @property (strong, nonatomic) NSString * urlRefString;
 
+/*!
+ Current User Id -- set by FireSuite
+ */
 @property (strong, nonatomic) NSString * currentUserId;
 
-@property (strong, nonatomic) id someProperty;
-
 #pragma mark START PRESENCE MANAGER
+
 /*!
  Call this somewhere in your code to begin the presence manager.  It's ok, but not advisable to call this multiple times.
  */
@@ -31,10 +36,14 @@
 
 #pragma mark CONNECTION STATUS OBSERVERS -- REGISTER FOR NOTIFICATIONS
 
-// Register
+/*!
+ Register observer to monitor current user's connection to firebase
+ */
 - (void) registerConnectionStatusObserver:(NSObject *)observer withSelector:(SEL)selector;
 
-// Remove
+/*!
+ Remove All Connection Status Observers
+ */
 - (void) removeAllConnectionStatusObservers;
 - (void) removeConnectionStatusObserver:(NSObject *)observer;
 - (void) removeAllConnectionStatusObserversExcept:(NSObject *)observer;
@@ -53,5 +62,9 @@
 - (void) removeAllUserStatusObserverObjectsExcept:(NSObject *)observerToKeep;
 - (void) removeAllUserStatusObserversExceptForUserId:(NSString *)userIdToKeep;
 - (void) removeAllUserStatusObserversExceptForObserverObject:(NSObject *)observerToKeep andUserId:(NSString *)userIdToKeep;
+
+#pragma mark END PRESENCE MONITOR
+
+- (void) stopPresenceMonitorWithCompletion:(void(^)(void))completion;
 
 @end

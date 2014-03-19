@@ -8,22 +8,20 @@
 #import "FSPresenceManager.h"
 
 @interface FSPresenceManager ()
-{   
-    // Current User's Connection To Firebase
-    Firebase * connectionMonitor;
-    // Connection Observers To Notify
-    NSMutableArray * connectionStatusObservers;
-    
-    // Other User's Connections To Firebase
-    Firebase * userStatusMonitor;
-    // User Status Observers To Notify
-    NSMutableArray * userStatusObservers;
-}
+
+// Current User's Connection To Firebase
+@property (strong, nonatomic) Firebase * connectionMonitor;
+// Connection Observers To Notify
+@property (strong, nonatomic) NSMutableArray * connectionStatusObservers;
+
+// Other User's Connections To Firebase
+@property (strong, nonatomic) Firebase * userStatusMonitor;
+// User Status Observers To Notify
+@property (strong, nonatomic) NSMutableArray * userStatusObservers;
+
 @end
 
 @implementation FSPresenceManager
-
-@synthesize someProperty, currentUserId, urlRefString;
 
 #pragma mark SINGLETON
 
@@ -42,22 +40,22 @@
 - (void) startPresenceManager {
     
     // If ConnectionMonitor Isn't Already Monitoring, Start Monitoring
-    if (!connectionMonitor) {
+    if (!_connectionMonitor) {
         
         // Prep ConnectionRefString
-        NSString * refString = [NSString stringWithFormat:@"%@.info/connected", urlRefString];
+        NSString * refString = [NSString stringWithFormat:@"%@.info/connected", _urlRefString];
         
         // Load ConnectionMonitor
-        connectionMonitor = [[Firebase alloc] initWithUrl:refString];
+        _connectionMonitor = [[Firebase alloc] initWithUrl:refString];
         
         // Begin Observing
-        [connectionMonitor observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+        [_connectionMonitor observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
             if([snapshot.value boolValue]) {
                 
                 // Connection Established! (or I've reconnected after a loss of connection)
                 
                 // Get ConnectionsRef
-                Firebase * con = [[Firebase alloc]initWithUrl:[NSString stringWithFormat:@"%@Users/%@/connections/", urlRefString, currentUserId]];
+                Firebase * con = [[Firebase alloc]initWithUrl:[NSString stringWithFormat:@"%@Users/%@/connections/", _urlRefString, _currentUserId]];
                 
                 // Create New Connection For This Device
                 Firebase * newConnection = [con childByAutoId];
@@ -69,7 +67,7 @@
                 [newConnection onDisconnectRemoveValue];
                 
                 // Set Last Online Timestamp
-                Firebase * lastOnlineRef = [[Firebase alloc]initWithUrl:[NSString stringWithFormat:@"%@Users/%@/lastOnline/", urlRefString, currentUserId]];
+                Firebase * lastOnlineRef = [[Firebase alloc]initWithUrl:[NSString stringWithFormat:@"%@Users/%@/lastOnline/", _urlRefString, _currentUserId]];
                 
                 // Set Last Online To Timestamp
                 [lastOnlineRef onDisconnectSetValue:[NSString stringWithFormat:@"%f",[[NSDate new] timeIntervalSince1970]]];
@@ -90,10 +88,10 @@
     //NSLog(@"PresenceManager: Notifying ConnectionStatusObservers isOnline: %@", isConnected ? @"YES" : @"NO");
     
     // See If Any Observers Exist
-    if (connectionStatusObservers) {
+    if (_connectionStatusObservers) {
         
         // Notify All Observers
-        for (NSDictionary * observer in connectionStatusObservers) {
+        for (NSDictionary * observer in _connectionStatusObservers) {
             
             // Parse Observer Object
             NSObject * ob = observer[@"observerObject"];
@@ -143,9 +141,14 @@
     }
 }
 
-#pragma mark CONNECTION STATUS OBSERVERS
+#pragma mark SET CONNECTION STATUS OBSERVERS
 
-- (void) registerConnectionStatusObserver:(NSObject *)observer withSelector:(SEL)selector {
+- (void) registerConnectionStatusObserver:(NSObject *)observer
+                             withSelector:(SEL)selector {
+    
+    if (!_connectionMonitor) {
+        [self startPresenceManager];
+    }
     
     NSMethodSignature * sig = [observer methodSignatureForSelector:selector];
     
@@ -179,7 +182,7 @@
     }
     
     // Create Connection Status Observers Pool If Necessary
-    if (!connectionStatusObservers) connectionStatusObservers = [NSMutableArray new];
+    if (!_connectionStatusObservers) _connectionStatusObservers = [NSMutableArray new];
     
     // Check Registration
     if (![self isConnectionStatusObserverAlreadyRegistered:observer]) {
@@ -188,7 +191,7 @@
         NSMutableDictionary * newObserver = [NSMutableDictionary new];
         newObserver[@"observerObject"] = observer;
         newObserver[@"selector"] = [NSValue valueWithPointer:selector];
-        [connectionStatusObservers addObject:newObserver];
+        [_connectionStatusObservers addObject:newObserver];
     }
     else {
         // Observer Already Exists
@@ -203,31 +206,33 @@
     
 }
 
+#pragma mark REMOVE CONNECTION STATUS OBSERVERS
+
 - (void) removeAllConnectionStatusObservers {
-    if (connectionStatusObservers) {
-        [connectionStatusObservers removeAllObjects];
-        connectionStatusObservers = nil;
+    if (_connectionStatusObservers) {
+        [_connectionStatusObservers removeAllObjects];
+        _connectionStatusObservers = nil;
     }
 }
 
 - (void) removeConnectionStatusObserver:(NSObject *)observer {
     if ([self isConnectionStatusObserverAlreadyRegistered:observer]) {
-        [connectionStatusObservers removeObject:observer];
+        [_connectionStatusObservers removeObject:observer];
     }
 }
 
 - (void) removeAllConnectionStatusObserversExcept:(NSObject *)observer {
-    if (connectionStatusObservers) {
+    if (_connectionStatusObservers) {
         if ([self isConnectionStatusObserverAlreadyRegistered:observer]) {
             NSMutableDictionary * observerToSave;
-            for (NSMutableDictionary * dict in connectionStatusObservers) {
+            for (NSMutableDictionary * dict in _connectionStatusObservers) {
                 if (dict[@"observerObject"] == observer) {
                     observerToSave = dict;
                     break;
                 }
             }
-            [connectionStatusObservers removeAllObjects];
-            if (observerToSave) [connectionStatusObservers addObject:observerToSave];
+            [_connectionStatusObservers removeAllObjects];
+            if (observerToSave) [_connectionStatusObservers addObject:observerToSave];
         }
         else {
             NSLog(@"\n\n **** PresenceManager: Attempt to RemoveAllConnectionStatusObserversExcept: - Observer Hasn't Been Created **** \n\n");
@@ -241,7 +246,7 @@
 // Instance Level
 - (BOOL) isConnectionStatusObserverAlreadyRegistered:(NSObject *)object {
     
-    for (NSMutableDictionary * dic in connectionStatusObservers) {
+    for (NSMutableDictionary * dic in _connectionStatusObservers) {
         if (dic[@"observerObject"] == object) {
             return YES;
         }
@@ -253,7 +258,9 @@
 
 #pragma mark SET USER STATUS OBSERVERS
 
-- (void) registerUserStatusObserver:(NSObject *)observer withSelector:(SEL)selector forUserId:(NSString *)userIdToObserve {
+- (void) registerUserStatusObserver:(NSObject *)observer
+                       withSelector:(SEL)selector
+                          forUserId:(NSString *)userIdToObserve {
     
     //--> GoodSelector = userStatusDidUpdateWithId:(NSString *)userId andStatus:(BOOL)isOnline;
     
@@ -317,15 +324,15 @@
 - (void) createMonitorForNewUserStatusObserver:(NSMutableDictionary *)newObserver {
     
     // Create UserStatusMonitor If Necessary
-    if (!userStatusMonitor) {
-        NSString * userStatusMonitorString = [NSString stringWithFormat:@"%@%@", urlRefString, @"Users/"];
+    if (!_userStatusMonitor) {
+        NSString * userStatusMonitorString = [NSString stringWithFormat:@"%@%@", _urlRefString, @"Users/"];
         //NSLog(@"STRING: %@", userStatusMonitorString);
-        userStatusMonitor = [[Firebase alloc]initWithUrl:userStatusMonitorString];
+        _userStatusMonitor = [[Firebase alloc]initWithUrl:userStatusMonitorString];
         //NSLog(@"userStatusMonitor: %@", userStatusMonitor);
     }
     
     // Generate Child For User
-    Firebase * childRef = [userStatusMonitor childByAppendingPath:[NSString stringWithFormat:@"%@/connections/", newObserver[@"userId"]]];
+    Firebase * childRef = [_userStatusMonitor childByAppendingPath:[NSString stringWithFormat:@"%@/connections/", newObserver[@"userId"]]];
     
     // Monitor This User's Connection Status
     FirebaseHandle userHandle = [childRef observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
@@ -366,10 +373,10 @@
     newObserver[@"firebaseHandle"] = [NSNumber numberWithInt:userHandle];
     
     // Create UserStatusObservers Pool If Necessary
-    if (!userStatusObservers) userStatusObservers = [NSMutableArray new];
+    if (!_userStatusObservers) _userStatusObservers = [NSMutableArray new];
     
     // Add Observer To Our Collection
-    [userStatusObservers addObject:newObserver];
+    [_userStatusObservers addObject:newObserver];
     
     // NSLog(@"UserStatusObservers: %@", userStatusObservers);
     
@@ -378,108 +385,110 @@
 #pragma mark REMOVE USER STATUS OBSERVERS
 
 - (void) removeAllUserStatusObservers {
-    if (userStatusObservers) {
-        for (NSMutableDictionary * observerOb in userStatusObservers) {
-            [userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
+    if (_userStatusObservers) {
+        for (NSMutableDictionary * observerOb in _userStatusObservers) {
+            [_userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
         }
-        userStatusObservers = nil;
+        _userStatusObservers = nil;
     }
 }
 
 - (void) removeUserStatusObserversForObject:(NSObject *)observerToRemove {
-    if (userStatusObservers) {
+    if (_userStatusObservers) {
         NSMutableArray * keepers = [NSMutableArray new];
-        for (NSMutableDictionary * observerOb in userStatusObservers) {
+        for (NSMutableDictionary * observerOb in _userStatusObservers) {
             if (observerOb[@"observerObject"] == observerToRemove) {
-                [userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
+                [_userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
             }
             else {
                 [keepers addObject:observerOb];
             }
         }
-        userStatusObservers = keepers;
+        _userStatusObservers = keepers;
     }
 }
 
 - (void) removeUserStatusObserversForUserId:(NSString *)userIdToRemove {
-    if (userStatusObservers) {
+    if (_userStatusObservers) {
         NSMutableArray * keepers = [NSMutableArray new];
-        for (NSMutableDictionary * observerOb in userStatusObservers) {
+        for (NSMutableDictionary * observerOb in _userStatusObservers) {
             if ([observerOb[@"userId"] isEqualToString:userIdToRemove]) {
-                [userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
+                [_userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
             }
             else {
                 [keepers addObject:observerOb];
             }
         }
-        userStatusObservers = keepers;
+        _userStatusObservers = keepers;
     }
 }
 
-- (void) removeStatusObserverForObject:(NSObject *)observerToRemove andUserId:(NSString *)userIdToRemove {
-    if (userStatusObservers) {
+- (void) removeStatusObserverForObject:(NSObject *)observerToRemove
+                             andUserId:(NSString *)userIdToRemove {
+    if (_userStatusObservers) {
         NSMutableArray * keepers = [NSMutableArray new];
-        for (NSMutableDictionary * observerOb in userStatusObservers) {
+        for (NSMutableDictionary * observerOb in _userStatusObservers) {
             if (observerOb[@"observerObject"] == observerToRemove && [observerOb[@"userId"]isEqualToString:userIdToRemove]) {
-                [userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
+                [_userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
             }
             else {
                 [keepers addObject:observerOb];
             }
         }
-        userStatusObservers = keepers;
+        _userStatusObservers = keepers;
     }
 }
 
 - (void) removeAllUserStatusObserverObjectsExcept:(NSObject *)observerToKeep {
-    if (userStatusObservers) {
+    if (_userStatusObservers) {
         NSMutableArray * keepers = [NSMutableArray new];
-        for (NSMutableDictionary * observerOb in userStatusObservers) {
+        for (NSMutableDictionary * observerOb in _userStatusObservers) {
             if (observerOb[@"observerObject"] == observerToKeep) {
                 [keepers addObject:observerOb];
             }
             else {
-                [userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
+                [_userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
             }
         }
-        userStatusObservers = keepers;
+        _userStatusObservers = keepers;
     }
 }
 
 - (void) removeAllUserStatusObserversExceptForUserId:(NSString *)userIdToKeep {
-    if (userStatusObservers) {
+    if (_userStatusObservers) {
         NSMutableArray * keepers = [NSMutableArray new];
-        for (NSMutableDictionary * observerOb in userStatusObservers) {
+        for (NSMutableDictionary * observerOb in _userStatusObservers) {
             if ([observerOb[@"userId"]isEqualToString:userIdToKeep]) {
                 [keepers addObject:observerOb];
             }
             else {
-                [userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
+                [_userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
             }
         }
-        userStatusObservers = keepers;
+        _userStatusObservers = keepers;
     }
 }
 
-- (void) removeAllUserStatusObserversExceptForObserverObject:(NSObject *)observerToKeep andUserId:(NSString *)userIdToKeep {
-    if (userStatusObservers) {
+- (void) removeAllUserStatusObserversExceptForObserverObject:(NSObject *)observerToKeep
+                                                   andUserId:(NSString *)userIdToKeep {
+    if (_userStatusObservers) {
         NSMutableArray * keepers = [NSMutableArray new];
-        for (NSMutableDictionary * observerOb in userStatusObservers) {
+        for (NSMutableDictionary * observerOb in _userStatusObservers) {
             if (observerOb[@"observerObject"] == observerToKeep && [observerOb[@"userId"]isEqualToString:userIdToKeep]) {
                 [keepers addObject:observerOb];
             }
             else {
-                [userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
+                [_userStatusMonitor removeObserverWithHandle:[observerOb[@"firebaseHandle"]intValue]];
             }
         }
-        userStatusObservers = keepers;
+        _userStatusObservers = keepers;
     }
 }
 
 // Instance Checker
 - (BOOL) doesUserStatusObserverAlreadyExist:(NSMutableDictionary *)userStatusObserver {
     
-    for (NSMutableDictionary * dic in userStatusObservers) {
+    for (NSMutableDictionary * dic in _userStatusObservers) {
         if (dic[@"observerObject"] == userStatusObserver[@"observerObject"] && [dic[@"userId"] isEqualToString:userStatusObserver[@"userId"]]) {
             return YES;
         }
@@ -489,14 +498,14 @@
     
 }
 
-#pragma mark CUSTOM PROPERTIES
+#pragma mark END PRESENCE MONITOR
 
-- (void) setSomeProperty:(id)newSomeProperty {
-    [[NSUserDefaults standardUserDefaults]setObject:newSomeProperty forKey:@"someProperty"];
-}
-
-- (id) someProperty {
-    return [[NSUserDefaults standardUserDefaults]objectForKey:@"someProperty"];
+- (void) stopPresenceMonitorWithCompletion:(void(^)(void))completion {
+    [self removeAllUserStatusObservers];
+    [self removeAllConnectionStatusObservers];
+    [_connectionMonitor removeAllObservers];
+    [_userStatusMonitor removeAllObservers];
+    completion();
 }
 
 @end

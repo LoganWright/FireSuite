@@ -13,13 +13,11 @@
 
 @interface FireSuite : NSObject
 
-+ (FireSuite *) suiteManager;
++ (void) setFirebaseURL:(NSString *)firebaseURL;
++ (void) setCurrentUserId:(NSString *)currentUserId;
 
-@property (strong, nonatomic) NSString * firebaseURL;
-@property (strong, nonatomic) NSString * currentUserId;
-
-@property (strong, nonatomic) FSChatManager * chatManager;
-@property (strong, nonatomic) FSPresenceManager * presenceManager;
-@property (strong, nonatomic) FSChannelManager * channelManager;
++ (FSChatManager *) chatManager;
++ (FSPresenceManager *) presenceManager;
++ (FSChannelManager *) channelManager;
 
 @end

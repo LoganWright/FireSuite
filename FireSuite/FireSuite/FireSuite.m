@@ -9,57 +9,39 @@
 
 @implementation FireSuite
 
-@synthesize firebaseURL, currentUserId, presenceManager, chatManager, channelManager;
+#pragma mark GET MANAGERS
 
-+ (FireSuite *) suiteManager {
-    static dispatch_once_t pred;
-    static FireSuite *shared = nil;
-    
-    dispatch_once(&pred, ^{
-        shared = [[FireSuite alloc] init];
-    });
-    return shared;
++ (FSChatManager *) chatManager {
+    return [FSChatManager singleton];
 }
 
-- (void) setFirebaseURL:(NSString *)firebaseURLsetter {
-    
-    if (![firebaseURLsetter hasSuffix:@"/"]) {
-        firebaseURLsetter = [NSString stringWithFormat:@"%@/", firebaseURLsetter];
++ (FSChannelManager *) channelManager {
+    return [FSChannelManager singleton];
+}
+
++ (FSPresenceManager *) presenceManager {
+    return [FSPresenceManager singleton];
+}
+
+#pragma mark SET URL & CURRENT USER ID
+
++ (void) setFirebaseURL:(NSString *)firebaseURL {
+    if (![firebaseURL hasSuffix:@"/"]) {
+        firebaseURL = [NSString stringWithFormat:@"%@/", firebaseURL];
     }
     
     // Set Our Tools
-    [FSChatManager singleton].urlRefString = firebaseURLsetter;
-    [FSPresenceManager singleton].urlRefString = firebaseURLsetter;
-    [FSChannelManager singleton].urlRefString = firebaseURLsetter;
-    
-    firebaseURL = firebaseURLsetter;
+    [FSChatManager singleton].urlRefString = firebaseURL;
+    [FSPresenceManager singleton].urlRefString = firebaseURL;
+    [FSChannelManager singleton].urlRefString = firebaseURL;
 }
 
-- (void) setCurrentUserId:(NSString *)currentUserIdToSet {
++ (void) setCurrentUserId:(NSString *)currentUserId {
     
     // Set Our Tools
-    [FSChatManager singleton].currentUserId = currentUserIdToSet;
-    [FSPresenceManager singleton].currentUserId = currentUserIdToSet;
-    [FSChannelManager singleton].currentUserId = currentUserIdToSet;
-    
-    currentUserId = currentUserIdToSet;
-}
-
-#pragma mark GETTERS
-
-- (FSPresenceManager *) presenceManager {
-    FSPresenceManager * manager = [FSPresenceManager singleton];
-    return manager;
-}
-
-- (FSChatManager *) chatManager {
-    FSChatManager * manager = [FSChatManager singleton];
-    return manager;
-}
-
-- (FSChannelManager *) channelManager {
-    FSChannelManager * manager = [FSChannelManager singleton];
-    return manager;
+    [FSChatManager singleton].currentUserId = currentUserId;
+    [FSPresenceManager singleton].currentUserId = currentUserId;
+    [FSChannelManager singleton].currentUserId = currentUserId;
 }
 
 @end

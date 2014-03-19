@@ -21,24 +21,20 @@
     
     // Step 1: Launch Fire Suite
     
-#pragma mark FIRE SUITE
+#pragma mark - INITIALIZE FIRESUITE
     
-    //  *** // - Call this before using any other aspects!
-    
-    NSString * firebaseMainURL = @"https://someFirebase.firebaseIO.com/";
-    FireSuite * fireSuite = [FireSuite suiteManager];
-    fireSuite.firebaseURL = firebaseMainURL;
-    fireSuite.currentUserId = @"currentUserId";
+    [FireSuite setFirebaseURL:@"https://someFirebase.firebaseIO.com/"];
+    [FireSuite setCurrentUserId:@"currentUserId"];
     
     // *** //
     
-#pragma mark PRESENCE
+#pragma mark PRESENCE MANAGER
     
     // Step 2: Set Up Presence Manager
     //
     // Do not initialize any other way!
     //
-    FSPresenceManager * presenceManager = fireSuite.presenceManager;
+    FSPresenceManager * presenceManager = [FireSuite presenceManager];
     
     // Start Monitor
     [presenceManager startPresenceManager];
@@ -58,14 +54,10 @@
 #pragma mark CHANNEL MANAGER
     
     // Get Channel Manager
-    FSChannelManager * channelManager = fireSuite.channelManager;
+    FSChannelManager * channelManager = [FireSuite channelManager];
     
-    // Observe Current User's Alert's Channel
-    //
-    // receivedAlert will be an nsdictionary
-    //
+    // Observe Current User's Alert's Channel -- To receive any data you'd like to send ...
     [channelManager registerUserAlertsObserver:self withSelector:@selector(receivedAlert:)];
-    
     
     // To send an alert
     NSMutableDictionary * alertData = [NSMutableDictionary new];
@@ -82,17 +74,16 @@
     
 #pragma mark CHAT MANAGER
     
-    FSChatManager * chatManager = fireSuite.chatManager;
+    FSChatManager * chatManager = [FireSuite chatManager];
     
     // Create
     
     // Set CustomId to nil for AutoId
     
-    [chatManager createNewChatForUsers:@[@"user1id", @"user2id"] withCustomId:nil andCompletionBlock:^(NSString *newChatId, NSError *error) {
+    [chatManager createNewChatForUsers:@[@"currentUserId", @"user2id"] withCustomId:@"testId" andCompletionBlock:^(NSString *newChatId, NSError *error) {
         NSLog(@"Created New Chat With Id: %@", newChatId);
         [self launchNewChatSessionForChatId:newChatId];
     }];
-
 }
 
 - (void)didReceiveMemoryWarning
@@ -100,43 +91,47 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
 - (void) launchNewChatSessionForChatId:(NSString *)chatId {
-    FireSuite * fireSuite = [FireSuite suiteManager];
-    FSChatManager * chatManager = fireSuite.chatManager;
-    chatManager.chatId = chatId; // chat id of new session
+    FSChatManager * chatManager = [FireSuite chatManager];
     chatManager.delegate = self; // who to send the messages
-    chatManager.maxCount = [NSNumber numberWithInt:50]; // number of initial recent messages to receive
-    [chatManager loadChatSessionWithCompletionBlock:^(NSArray *messages, NSError *error) {
+    [chatManager loadChatSessionWithChatId:chatId andNumberOfRecentMessages:50];
+    
+}
+- (void) endChat {
+    [[FireSuite chatManager] endChatSessionWithCompletionBlock:^(NSError *error) {
         if (!error) {
-            NSLog(@"Open with recent messages: %@", messages);
-            // receivedNewMessage: will begin running now.
+            // ended successfully
         }
         else {
-            NSLog(@"Error: %@", error);
+            NSLog(@"Failed To End Session: %@", error);
         }
-    }];
-}
-
-- (void) endChat {
-    FireSuite * fireSuite = [FireSuite suiteManager];
-    FSChatManager * chatManager = fireSuite.chatManager;
-    
-    [chatManager endChatSessionWithCompletionBlock:^{
-        NSLog(@"Closed Current Chat Session");
     }];
 }
 
 #pragma mark CHAT MANAGER DELEGATE
 
 - (void) newMessageReceived:(NSMutableDictionary *)newMessage {
-    NSLog(@"Received new message: %@", newMessage);
+    NSLog(@"Received New Message: %@", newMessage);
+}
+
+- (void) chatSessionLoadDidFinishWithResponse:(NSDictionary *)response {
+    NSDictionary * header = response[kResponseHeader];
+    NSArray * retrievedMessages = response[kResponseMessages];
+    
+    NSLog(@"Retrieved Header: %@ andMessages: %@", header, retrievedMessages);
+}
+
+- (void) chatSessionLoadDidFailWithError:(NSError*)error {
+    NSLog(@"loadDidFail: %@", error);
+}
+
+- (void) sendMessageDidFailWithError:(NSError *)error {
+     NSLog(@"sendMessageDidFail: %@", error);
 }
 
 #pragma mark CHANNEL MANAGER CALLBACKS
 
 // Used to receive alerts, for sending data from user to user ...
-
 - (void) receivedAlert:(NSDictionary *)alert {
     NSString * alertType = alert[kAlertType];
     id alertData = alert[kAlertData];
@@ -146,12 +141,12 @@
     NSLog(@"Received alert sentAt: %@ alertType: %@ withData: %@", sentAt, alertType, alertData);
 }
 
-#pragma mark PRESENCE MANAGER
+#pragma mark PRESENCE MANAGER CALLBACKS
 
 // Whether or not current user is connected to firebase.
 
 - (void) isConnected:(BOOL)isConnected {
-    NSLog(@"Current User %@ firebase", isConnected ? @"Connected To": @"Disconnected From");
+    NSLog(@"Current User %@ Firebase", isConnected ? @"Connected To": @"Disconnected From");
 }
 
 // Use this to monitor chat partners or whoever to see if they're online

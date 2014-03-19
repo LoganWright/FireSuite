@@ -5,9 +5,11 @@
 //  Copyright (c) 2014 Logan Wright. All rights reserved.
 //
 
-NSString *const kAlertType = @"kAlertType";
 NSString *const kAlertData = @"kAlertData";
 NSString *const kAlertTimestamp = @"kAlertTimestamp";
+NSString *const kAlertType = @"kAlertType";
+NSString *const kAlertTypeNewMessage = @"kAlertTypeNewMessage";
+
 #import "FSChannelManager.h"
 
 @interface FSChannelManager ()
@@ -19,8 +21,6 @@ NSString *const kAlertTimestamp = @"kAlertTimestamp";
 @end
 
 @implementation FSChannelManager
-
-@synthesize urlRefString, currentUserId;
 
 + (FSChannelManager *) singleton {
     static dispatch_once_t pred;
@@ -37,7 +37,7 @@ NSString *const kAlertTimestamp = @"kAlertTimestamp";
                    andData:(id)data
             withCompletion:(void (^)(NSError *))completion
 {
-    NSString * alertsRefString = [NSString stringWithFormat:@"%@Users/%@/alerts/", urlRefString, userId];
+    NSString * alertsRefString = [NSString stringWithFormat:@"%@Users/%@/alerts/", _urlRefString, userId];
     Firebase * sender = [[Firebase alloc]initWithUrl:alertsRefString];
     
     NSMutableDictionary * alertt = [NSMutableDictionary new];
@@ -61,7 +61,7 @@ NSString *const kAlertTimestamp = @"kAlertTimestamp";
     if (!alertsRef) {
         
         // Prep ConnectionRefString
-        NSString * refString = [NSString stringWithFormat:@"%@Users/%@/alerts/", urlRefString, currentUserId];
+        NSString * refString = [NSString stringWithFormat:@"%@Users/%@/alerts/", _urlRefString, _currentUserId];
         
         // Load ConnectionMonitor
         alertsRef = [[Firebase alloc] initWithUrl:refString];
@@ -151,24 +151,29 @@ NSString *const kAlertTimestamp = @"kAlertTimestamp";
 
 - (void) registerUserAlertsObserver:(NSObject *)observer withSelector:(SEL)selector {
     
-    // Start Incoming Alerts Monitor If Necessary
-    if (!alertsRef) [self startIncomingAlertsMonitor];
-    
-    // Create Connection Status Observers Pool If Necessary
-    if (!alertsObservers) alertsObservers = [NSMutableArray new];
-    
-    // Check Registration
-    if (![self isAlertObserverAlreadyRegistered:observer]) {
+    if (_currentUserId) {
+        // Start Incoming Alerts Monitor If Necessary
+        if (!alertsRef) [self startIncomingAlertsMonitor];
         
-        // Generate New Observer
-        NSMutableDictionary * newObserver = [NSMutableDictionary new];
-        newObserver[@"observerObject"] = observer;
-        newObserver[@"selector"] = [NSValue valueWithPointer:selector];
-        [alertsObservers addObject:newObserver];
+        // Create Connection Status Observers Pool If Necessary
+        if (!alertsObservers) alertsObservers = [NSMutableArray new];
+        
+        // Check Registration
+        if (![self isAlertObserverAlreadyRegistered:observer]) {
+            
+            // Generate New Observer
+            NSMutableDictionary * newObserver = [NSMutableDictionary new];
+            newObserver[@"observerObject"] = observer;
+            newObserver[@"selector"] = [NSValue valueWithPointer:selector];
+            [alertsObservers addObject:newObserver];
+        }
+        else {
+            // Observer Already Exists
+            NSLog(@"\n\n **** 3:AlertsManager: Attempt to add connectionStatusObserver that already exists **** \n\n");
+        }
     }
     else {
-        // Observer Already Exists
-        NSLog(@"\n\n **** 3:AlertsManager: Attempt to add connectionStatusObserver that already exists **** \n\n");
+        NSLog(@"DID NOT REGISTER USER ALERTS OBSERVER, MUST SET CURRENT USER ID [FireSuite setCurrentUserId:<userId>];");
     }
 }
 
