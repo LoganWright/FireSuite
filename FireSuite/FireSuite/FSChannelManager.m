@@ -48,7 +48,7 @@ NSString *const kAlertTypeNewMessage = @"kAlertTypeNewMessage";
     alertt[kAlertTimestamp] = timeStamp;
     [[sender childByAutoId] setValue:alertt andPriority:timeStamp withCompletionBlock:^(NSError *error, Firebase *ref) {
         
-        completion(error);
+        if (completion) completion(error);
         
     }];
 }

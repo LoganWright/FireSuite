@@ -339,6 +339,9 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
             response[kResponseHeader] = _responseHeader;
             response[kResponseMessages] = [NSNull new];
             [_delegate chatSessionLoadDidFinishWithResponse:response];
+            
+            // Start Monitor
+            [self monitorIncomingMessagesWithPriority:_responseHeader[kHeaderTimeStamp]];
         }
     } withCancelBlock:^(NSError *error) {
         
@@ -369,7 +372,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
     
     // Run Query
     queryHandle = [firebaseQ observeEventType:FEventTypeChildAdded withBlock:^(FDataSnapshot *snapshot) {
-
+        
         // Received Value -- > Add To Array
         if (snapshot.value != [NSNull new]) [_receivedMessagesArray addObject:snapshot.value];
         
@@ -458,9 +461,6 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
                 
                 [currentData setValue:header];
             }
-            else {
-                NSLog(@"FSChatManager: Can't Update Header On Logout -- Doesn't Exist");
-            }
             
             // Return It
             return [FTransactionResult successWithValue:currentData];
@@ -530,7 +530,6 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
         if (!error) {
             
             // ---- Message Sent! Update Everything Else ---- //
-            
             // Update Header
             [self updateHeaderWithMessage:message];
             

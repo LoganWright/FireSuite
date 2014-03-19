@@ -27,62 +27,24 @@
     [FireSuite setCurrentUserId:@"currentUserId"];
     
     // *** //
-    
-#pragma mark PRESENCE MANAGER
-    
-    // Step 2: Set Up Presence Manager
-    //
-    // Do not initialize any other way!
-    //
-    FSPresenceManager * presenceManager = [FireSuite presenceManager];
-    
-    // Start Monitor
-    [presenceManager startPresenceManager];
-    
-    // Monitor Current User's Connection
-    [presenceManager registerConnectionStatusObserver:self withSelector:@selector(isConnected:)];
-    
-    // Monitor Other Users (for instance, a chat opponent)
-    [presenceManager registerUserStatusObserver:self
-                                   withSelector:@selector(userStatusDidUpdateWithId:andStatus:)
-                                      forUserId:@"anotherUserId"];
-    [presenceManager registerUserStatusObserver:self
-                                   withSelector:@selector(userStatusDidUpdateWithId:andStatus:)
-                                      forUserId:@"yetAnotherUserId"];
-    
-    
-#pragma mark CHANNEL MANAGER
-    
-    // Get Channel Manager
-    FSChannelManager * channelManager = [FireSuite channelManager];
-    
-    // Observe Current User's Alert's Channel -- To receive any data you'd like to send ...
-    [channelManager registerUserAlertsObserver:self withSelector:@selector(receivedAlert:)];
-    
-    // To send an alert
-    NSMutableDictionary * alertData = [NSMutableDictionary new];
-    alertData[@"some"] = @"random";
-    alertData[@"data"] = @"here";
-    [channelManager sendAlertToUserId:@"currentUserId" withAlertType:@"someAlertType" andData:alertData withCompletion:^(NSError * error) {
-        if (!error) {
-            NSLog(@"Alert Sent");
-        }
-        else {
-            NSLog(@"ERROR: %@", error);
-        }
-    }];
-    
 #pragma mark CHAT MANAGER
     
     FSChatManager * chatManager = [FireSuite chatManager];
+    chatManager.delegate = self;
     
-    // Create
-    
+    // Create New Chat For @"currentUserId", @"anotherUserId"
     // Set CustomId to nil for AutoId
-    [chatManager createNewChatForUsers:@[@"currentUserId", @"anotherUserId"] withCustomId:nil andCompletionBlock:^(NSString *newChatId, NSError *error) {
-        NSLog(@"Created New Chat With Id: %@", newChatId);
-        [self launchNewChatSessionForChatId:newChatId];
-    }];
+    [chatManager createNewChatForUsers:@[@"currentUserId", @"anotherUserId"]
+                          withCustomId:nil
+                    andCompletionBlock:^(NSString *newChatId, NSError *error) {
+                        if (!error) {
+                            
+                            // Start New Chat Session W/ Id and Max Number Of Recent Messages
+                            // To Retrieve from the server
+                            [chatManager loadChatSessionWithChatId:newChatId
+                                         andNumberOfRecentMessages:50];
+                        }
+                    }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -90,16 +52,11 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-- (void) launchNewChatSessionForChatId:(NSString *)chatId {
-    FSChatManager * chatManager = [FireSuite chatManager];
-    chatManager.delegate = self; // who to send the messages
-    [chatManager loadChatSessionWithChatId:chatId andNumberOfRecentMessages:50];
-    
-}
 - (void) endChat {
     [[FireSuite chatManager] endChatSessionWithCompletionBlock:^(NSError *error) {
         if (!error) {
             // ended successfully
+            NSLog(@"Ended Chat");
         }
         else {
             NSLog(@"Failed To End Session: %@", error);
@@ -111,13 +68,23 @@
 
 - (void) newMessageReceived:(NSMutableDictionary *)newMessage {
     NSLog(@"Received New Message: %@", newMessage);
+    
+    if ([newMessage[@"content"] isEqualToString:@"Hello World!"]) {
+        NSLog(@"Hello Firebase!");
+    }
 }
 
 - (void) chatSessionLoadDidFinishWithResponse:(NSDictionary *)response {
+    
     NSDictionary * header = response[kResponseHeader];
     NSArray * retrievedMessages = response[kResponseMessages];
     
     NSLog(@"Retrieved Header: %@ andMessages: %@", header, retrievedMessages);
+    
+    
+    // ** Sending A Message ** //
+    [[FireSuite chatManager] sendNewMessage:@"Hello World!"];
+    
 }
 
 - (void) chatSessionLoadDidFailWithError:(NSError*)error {
@@ -127,6 +94,8 @@
 - (void) sendMessageDidFailWithError:(NSError *)error {
      NSLog(@"sendMessageDidFail: %@", error);
 }
+
+/*
 
 #pragma mark CHANNEL MANAGER CALLBACKS
 
@@ -153,5 +122,54 @@
 - (void) userStatusDidUpdateWithId:(NSString *)userId andStatus:(BOOL)isOnline {
     NSLog(@"%@ is currently: %@", userId, isOnline ? @"Online": @"Offline");
 }
+*/
 
 @end
+
+/*
+ 
+ #pragma mark PRESENCE MANAGER
+ 
+ // Step 2: Set Up Presence Manager
+ //
+ // Do not initialize any other way!
+ //
+ FSPresenceManager * presenceManager = [FireSuite presenceManager];
+ 
+ // Start Monitor
+ [presenceManager startPresenceManager];
+ 
+ // Monitor Current User's Connection
+ [presenceManager registerConnectionStatusObserver:self withSelector:@selector(isConnected:)];
+ 
+ // Monitor Other Users (for instance, a chat opponent)
+ [presenceManager registerUserStatusObserver:self
+ withSelector:@selector(userStatusDidUpdateWithId:andStatus:)
+ forUserId:@"anotherUserId"];
+ [presenceManager registerUserStatusObserver:self
+ withSelector:@selector(userStatusDidUpdateWithId:andStatus:)
+ forUserId:@"yetAnotherUserId"];
+ 
+ 
+ #pragma mark CHANNEL MANAGER
+ 
+ // Get Channel Manager
+ FSChannelManager * channelManager = [FireSuite channelManager];
+ 
+ // Observe Current User's Alert's Channel -- To receive any data you'd like to send ...
+ [channelManager registerUserAlertsObserver:self withSelector:@selector(receivedAlert:)];
+ 
+ // To send an alert
+ NSMutableDictionary * alertData = [NSMutableDictionary new];
+ alertData[@"some"] = @"random";
+ alertData[@"data"] = @"here";
+ [channelManager sendAlertToUserId:@"currentUserId" withAlertType:@"someAlertType" andData:alertData withCompletion:^(NSError * error) {
+ if (!error) {
+ NSLog(@"Alert Sent");
+ }
+ else {
+ NSLog(@"ERROR: %@", error);
+ }
+ }];
+ 
+ */
