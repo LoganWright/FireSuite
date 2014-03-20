@@ -8,8 +8,41 @@
 #import <Foundation/Foundation.h>
 #import <Firebase/Firebase.h>
 
+#pragma mark CONSTANTS
+
+typedef enum {
+    FSChatErrorAlreadyInUse = 101,
+    FSChatErrorFailedToGetHeader = 202,
+} FSChatErrorCode;
+
+// Response Keys
 FOUNDATION_EXPORT NSString *const kResponseMessages;
 FOUNDATION_EXPORT NSString *const kResponseHeader;
+
+// Error Keys
+FOUNDATION_EXPORT NSString * const kFSChatManagerErrorDomain;
+FOUNDATION_EXPORT NSString * const kErrorFailedToGetHeader;
+FOUNDATION_EXPORT NSString * const kErrorAlreadyInUse;
+
+// Chat Keys
+FOUNDATION_EXPORT NSString *const kChatHeader;
+FOUNDATION_EXPORT NSString *const kChatMessages;
+FOUNDATION_EXPORT NSString *const kChatCreatedAt;
+FOUNDATION_EXPORT NSString *const kChatUsers;
+
+// Header Keys
+FOUNDATION_EXPORT NSString *const kHeaderLastMessage;
+FOUNDATION_EXPORT NSString *const kHeaderTimeStamp;
+FOUNDATION_EXPORT NSString *const kHeaderCreatedAt;
+FOUNDATION_EXPORT NSString *const kHeaderUsers;
+
+// Message Keys
+FOUNDATION_EXPORT NSString *const kMessageSentTo;
+FOUNDATION_EXPORT NSString *const kMessageSentBy;
+FOUNDATION_EXPORT NSString *const kMessageContent;
+FOUNDATION_EXPORT NSString *const kMessageTimestamp;
+FOUNDATION_EXPORT NSString *const kMessageHasViewed;
+FOUNDATION_EXPORT NSString *const kMessageChatId;
 
 /*
  Firebase Priority Doesn't Calculate Decimals in priorities, Multiply By 1000 To Expose Milliseconds and have more accurate priorities!
@@ -47,7 +80,7 @@ FOUNDATION_EXPORT NSString *const kResponseHeader;
 /*!
  The Chat Manager
  */
-+ (FSChatManager *) singleton;
++ (instancetype) singleton;
 
 /*!
  Used to receive callbacks for incoming message stream -- must adhere to FSChatManagerDelegate Protocol
@@ -75,7 +108,7 @@ FOUNDATION_EXPORT NSString *const kResponseHeader;
  */
 - (void) createNewChatForUsers:(NSArray *)users
                   withCustomId:(NSString *)customId
-            andCompletionBlock:(void (^)(NSString * newChat, NSError * error))completion;
+            andCompletionBlock:(void (^)(NSString * newChatId, NSError * error))completion;
 
 #pragma mark ADD USER TO CHAT
 

@@ -23,7 +23,7 @@
     
 #pragma mark - INITIALIZE FIRESUITE
     
-    [FireSuite setFirebaseURL:@"https://someFirebase.firebaseIO.com/"];
+    [FireSuite setFirebaseURL:@"https://randomFirebase.firebaseIO.com/"];
     [FireSuite setCurrentUserId:@"currentUserId"];
     
     // *** //

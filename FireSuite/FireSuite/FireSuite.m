@@ -26,6 +26,7 @@
 #pragma mark SET URL & CURRENT USER ID
 
 + (void) setFirebaseURL:(NSString *)firebaseURL {
+    
     if (![firebaseURL hasSuffix:@"/"]) {
         firebaseURL = [NSString stringWithFormat:@"%@/", firebaseURL];
     }

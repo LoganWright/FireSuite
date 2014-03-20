@@ -8,22 +8,39 @@
 #import "FSChatManager.h"
 #import "FSChannelManager.h"
 
+
+#pragma mark KEYS
+
 // Extern Keys
 NSString *const kResponseMessages = @"kResponseMessages";
 NSString *const kResponseHeader = @"kResponseHeader";
 
-// Message Keys
-static NSString * kMessageSentTo = @"sentTo";
-static NSString * kMessageSentBy = @"sentBy";
-static NSString * kMessageContent = @"content";
-static NSString * kMessageTimestamp = @"timestamp";
-static NSString * kMessageHasViewed = @"hasViewed";
-static NSString * kMessageChatId = @"chatId";
+// Error Keys
+NSString *const kFSChatManagerErrorDomain = @"kFSChatManagerErrorDomain";
+NSString *const kErrorFailedToGetHeader = @"Failed To Get Chat Header";
+NSString *const kErrorAlreadyInUse = @"Chat Manager Is Already In Use";
+
+// Chat Keys
+NSString *const kChatHeader= @"header";
+NSString *const kChatMessages = @"messages";
+NSString *const kChatCreatedAt = @"createdAt";
+NSString *const kChatUsers = @"users";
 
 // Header Keys
-static NSString * kHeaderLastMessage = @"lastMessage";
-static NSString * kHeaderTimeStamp = @"timestamp";
-static NSString * kHeaderCreatedAt = @"createdAt";
+NSString *const kHeaderLastMessage = @"lastMessage";
+NSString *const kHeaderTimeStamp = @"timestamp";
+NSString *const kHeaderCreatedAt = @"createdAt";
+NSString *const kHeaderUsers = @"users";
+
+// Message Keys
+NSString *const kMessageSentTo = @"sentTo";
+NSString *const kMessageSentBy = @"sentBy";
+NSString *const kMessageContent = @"content";
+NSString *const kMessageTimestamp = @"timestamp";
+NSString *const kMessageHasViewed = @"hasViewed";
+NSString *const kMessageChatId = @"chatId";
+
+
 
 @interface FSChatManager ()
 
@@ -60,7 +77,7 @@ static NSString * kHeaderCreatedAt = @"createdAt";
 
 #pragma mark SINGLETON
 
-+ (FSChatManager *) singleton {
++ (instancetype) singleton {
     static dispatch_once_t pred;
     static FSChatManager *shared = nil;
     
@@ -74,7 +91,7 @@ static NSString * kHeaderCreatedAt = @"createdAt";
 
 - (void) createNewChatForUsers:(NSArray *)users
                   withCustomId:(NSString *)customId
-            andCompletionBlock:(void (^)(NSString * newChat, NSError * error))completion {
+            andCompletionBlock:(void (^)(NSString * newChatId, NSError * error))completion {
     NSString * chatsString = [NSString stringWithFormat:@"%@Chats/", _urlRefString];
     Firebase * chatsRef = [[Firebase alloc]initWithUrl:chatsString];
     Firebase * newChatRef;
@@ -87,7 +104,7 @@ static NSString * kHeaderCreatedAt = @"createdAt";
     }
     
     NSMutableDictionary * newChat = [NSMutableDictionary new];
-    if (users.count > 0) newChat[@"users"] = users;
+    if (users.count > 0) newChat[kChatUsers] = users;
     
     NSString * timeStamp = TimeStamp;
     NSMutableDictionary * headerDict = [NSMutableDictionary new];
@@ -96,10 +113,13 @@ static NSString * kHeaderCreatedAt = @"createdAt";
         headerDict[str] = timeStamp;
     }
     
+    // Set Header
     headerDict[kHeaderTimeStamp] = timeStamp;
     headerDict[kHeaderLastMessage] = @"";
-    newChat[@"header"] = headerDict;
-    newChat[@"createdAt"] = timeStamp;
+    
+    // Set Chat
+    newChat[kChatHeader] = headerDict;
+    newChat[kChatCreatedAt] = timeStamp;
     
     [newChatRef setValue:newChat andPriority:timeStamp withCompletionBlock:^(NSError *error, Firebase *ref) {
         if (!error) {
@@ -123,8 +143,44 @@ static NSString * kHeaderCreatedAt = @"createdAt";
     
     if (users.count > 0) {
         for (NSString * user in users) {
-            NSString * user1URL = [NSString stringWithFormat:@"%@Users/%@/chats", _urlRefString, user];
+            NSString * user1URL = [NSString stringWithFormat:@"%@Users/%@/chats/", _urlRefString, user];
             Firebase * chatsRef = [[Firebase alloc]initWithUrl:user1URL];
+            
+            [chatsRef runTransactionBlock:^FTransactionResult *(FMutableData *currentData) {
+                NSLog(@"CurrentData: %@", currentData.value);
+                
+                NSMutableArray * chatsArray;
+                
+                if (currentData.value != [NSNull new]) {
+                    NSLog(@"exists");
+                    chatsArray = currentData.value;
+                    if (![chatsArray containsObject:chatId]) {
+                        [chatsArray addObject:chatId];
+                    }
+                    NSLog(@"ChatsArray: %@", chatsArray);
+                }
+                else {
+                    chatsArray = [NSMutableArray new];
+                    [chatsArray addObject:chatId];
+                }
+                
+                [currentData setValue:chatsArray];
+                return [FTransactionResult successWithValue:currentData];
+            } andCompletionBlock:^(NSError *error, BOOL committed, FDataSnapshot *snapshot) {
+                
+                count++;
+                if (!error) {
+                    if (count == users.count) {
+                        completion(chatId, nil);
+                    }
+                }
+                else {
+                    completion(nil, error);
+                }
+                
+            } withLocalEvents:NO];
+            
+            /*
             [[chatsRef childByAutoId] setValue:chatId withCompletionBlock:^(NSError *error, Firebase *ref) {
                 if (!error) {
                     count++;
@@ -138,6 +194,7 @@ static NSString * kHeaderCreatedAt = @"createdAt";
                     return;
                 }
             }];
+             */
         }
     }
     else {
@@ -165,7 +222,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
             // Get Header From Value
             NSMutableDictionary * header = currentData.value;
             
-            NSMutableArray * usersArr = header[@"users"];
+            NSMutableArray * usersArr = header[kHeaderUsers];
             if (![usersArr containsObject:userId]) {
                 [usersArr addObject:userId];
             }
@@ -246,9 +303,28 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
 - (void) loadChatSessionWithChatId:(NSString *)chatId andNumberOfRecentMessages:(int)numberOfMessages {
     
     if (_messagesRef) {
-        NSLog(@"FSChatManager: ** End Chat Session Before Starting A New One! ** ");
-        NSError * error = [NSError errorWithDomain:@"** End Chat Session Before Starting A New One! **" code:808 userInfo:nil];
+        
+        // -- Opt 1 - Return Error: Already In Use
+        NSDictionary *userInfo = @{
+                                   NSLocalizedDescriptionKey: NSLocalizedString(kErrorAlreadyInUse, nil),
+                                   NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"Chat Manager Is Already Active", nil),
+                                   NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Call endChatSessionWithCompletionBlock: before loading a new chat session.", nil)
+                                   };
+        
+        NSError * error = [NSError errorWithDomain:kFSChatManagerErrorDomain
+                                              code:FSChatErrorAlreadyInUse
+                                          userInfo:userInfo];
+        
         [_delegate chatSessionLoadDidFailWithError:error];
+        
+        // Opt 2 - End automatically
+        
+        /*
+        [self endChatSessionWithCompletionBlock:^(NSError *error) {
+            [self loadChatSessionWithChatId:chatId andNumberOfRecentMessages:numberOfMessages];
+        }];
+        */
+        
         return;
     }
     
@@ -263,10 +339,47 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
 
 // Step 1 - Get Header
 - (void) getHeader {
-    NSString * headerString = [NSString stringWithFormat:@"%@Chats/%@/header/",_urlRefString, _chatId];
-    Firebase * headerSnap = [[Firebase alloc]initWithUrl:headerString];
     
-    [headerSnap observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+    NSString * timestamp = TimeStamp;
+    
+    // Create Header Ref If Necessary
+    if (!_chatHeaderRef) {
+        NSString * headerRefString = [NSString stringWithFormat:@"%@Chats/%@/header/", _urlRefString, _chatId];
+        _chatHeaderRef = [[Firebase alloc]initWithUrl:headerRefString];
+    }
+    
+    // Update Header To Latest Timestamp for CurrentUser
+    [_chatHeaderRef runTransactionBlock:^FTransactionResult *(FMutableData *currentData) {
+        
+        // Declare Header Variable
+        NSMutableDictionary * header;
+        
+        // Does Header Exist?
+        if (currentData.value != [NSNull new]) {
+            
+            // Get Header From Value
+            header = currentData.value;
+            
+            // Set Last Time Our Current User Performed An Action
+            if (_currentUserId) {
+                
+                // Add Last Seen Timestamp If Newer
+                if ([timestamp doubleValue] > [header[_currentUserId] doubleValue]) {
+                    
+                    // Set Last Time
+                    header[_currentUserId] = timestamp;
+                    
+                }
+            }
+            
+            [currentData setValue:header];
+        }
+        
+        // Return It
+        return [FTransactionResult successWithValue:currentData];
+    } andCompletionBlock:^(NSError *error, BOOL committed, FDataSnapshot *snapshot) {
+        
+        // Continue
         if (snapshot.value != [NSNull new]) {
             _responseHeader = snapshot.value;
             
@@ -274,10 +387,18 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
             [self getUsers];
         }
         else {
-            NSError * error = [NSError errorWithDomain:@"Unable To Retrieve Chat Header" code:202 userInfo:nil];
+            // Return Error
+            NSDictionary *userInfo = @{
+                                       NSLocalizedDescriptionKey: NSLocalizedString(kErrorFailedToGetHeader, nil),
+                                       NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"Doesn't Exist", nil),
+                                       NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Chat was likely created incorrectly.", nil)
+                                       };
+            NSError * error = [NSError errorWithDomain:kFSChatManagerErrorDomain
+                                                  code:FSChatErrorFailedToGetHeader
+                                              userInfo:userInfo];
             [_delegate chatSessionLoadDidFailWithError:error];
         }
-    }];
+    } withLocalEvents:NO];
 }
 
 // Step 2 - Get Users
@@ -293,22 +414,11 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
             
             // Save Users
             _users = snapshot.value;
-            
-            // Next Step --> Count
-            //[self getCount];
         }
-        
-        /*
-        // No User Array!
-        else {
-            
-            // Return Arrow
-            NSError * err = [NSError errorWithDomain:@"Unable To Retrieve Users -- Chats Must Have Array of 2 User Id's to Properly Manage Chat" code:1 userInfo:nil];
-            [_delegate chatSessionLoadDidFailWithError:err];
-        }*/
         
         // Next Step --> Count
         [self getCount];
+        
     } withCancelBlock:^(NSError *error) {
         
         // Cancelled Here, Report Error
@@ -343,12 +453,10 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
             // Start Monitor
             [self monitorIncomingMessagesWithPriority:_responseHeader[kHeaderTimeStamp]];
         }
-    } withCancelBlock:^(NSError *error) {
         
-        // Return Error
-        NSError * err = [NSError errorWithDomain:@"Failed To Get Count" code:0 userInfo:nil];
-        //completion(nil, err);
-        [_delegate chatSessionLoadDidFailWithError:err];
+    } withCancelBlock:^(NSError *error) {
+        // Send Error
+        [_delegate chatSessionLoadDidFailWithError:error];
     }];
 }
 
@@ -431,7 +539,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
         
         // Create Header Ref If Necessary
         if (!_chatHeaderRef) {
-            NSString * headerRefString = [NSString stringWithFormat:@"%@%@%@%@%@", _urlRefString, @"Chats/", _chatId, @"/", @"header/"];
+            NSString * headerRefString = [NSString stringWithFormat:@"%@Chats/%@/header/", _urlRefString, _chatId];
             _chatHeaderRef = [[Firebase alloc]initWithUrl:headerRefString];
         }
         
@@ -491,6 +599,9 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
             
         } withLocalEvents:NO];
     }
+    else {
+        completion(nil);
+    }
 }
 
 #pragma mark ADD MESSAGE TO CHAT
@@ -500,10 +611,13 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
     // Get Users
     NSString * sentById = _currentUserId;
     
-    // Sent to other
-    NSString * sentToId = _users[0];
-    if ([sentById isEqualToString:sentToId]) sentToId = _users[1];
-    
+    // SentTo - Opponent
+    // If more than 2, is for chat, and not directly to a user
+    NSString * sentToId;
+    if (_users.count == 2) {
+        sentToId = _users[0];
+        if ([sentById isEqualToString:sentToId]) sentToId = _users[1];
+    }
     /*
      Firebase Priority Doesn't Calculate Decimals in priorities, Multiply By 1000 To Expose Milliseconds and have more accurate priorities!
      */
@@ -521,7 +635,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
     
     // Create Message Ref If Necessary
     if (!_messagesRef) {
-        NSString * messageRefString = [NSString stringWithFormat:@"%@%@%@%@%@", _urlRefString, @"Chats/", _chatId, @"/", @"messages/"];
+        NSString * messageRefString = [NSString stringWithFormat:@"%@Chats/%@/messages/", _urlRefString, _chatId];
         _messagesRef = [[Firebase alloc]initWithUrl:messageRefString];
     }
     
@@ -530,6 +644,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
         if (!error) {
             
             // ---- Message Sent! Update Everything Else ---- //
+            
             // Update Header
             [self updateHeaderWithMessage:message];
             
@@ -550,7 +665,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
 
     // Create Header Ref If Necessary
     if (!_chatHeaderRef) {
-        NSString * headerRefString = [NSString stringWithFormat:@"%@%@%@%@%@", _urlRefString, @"Chats/", _chatId, @"/", @"header/"];
+        NSString * headerRefString = [NSString stringWithFormat:@"%@Chats/%@/header/", _urlRefString, _chatId];
         _chatHeaderRef = [[Firebase alloc]initWithUrl:headerRefString];
     }
     
@@ -582,7 +697,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
                 
                 // Update Message
                 header[kHeaderTimeStamp] = message[kMessageTimestamp]; // Last Updated
-                header[kHeaderLastMessage] = message[kMessageContent];
+                header[kHeaderLastMessage] = message;
             }
         }
         
@@ -615,7 +730,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
     
     // Create Count Ref If Necessary
     if (!_countRef) {
-        NSString * countURL = [NSString stringWithFormat:@"%@Chats/%@/count", _urlRefString, _chatId];
+        NSString * countURL = [NSString stringWithFormat:@"%@Chats/%@/count/", _urlRefString, _chatId];
         _countRef = [[Firebase alloc] initWithUrl:countURL];
     }
     

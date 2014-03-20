@@ -337,7 +337,7 @@
     // Monitor This User's Connection Status
     FirebaseHandle userHandle = [childRef observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
         
-        NSLog(@"Received User Statusupdate: %@", snapshot.value);
+//        NSLog(@"Received User Statusupdate: %@", snapshot.value);
         
         // Set Offline
         BOOL isOnline = NO;
