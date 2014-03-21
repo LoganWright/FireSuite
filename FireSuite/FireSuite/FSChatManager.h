@@ -20,9 +20,9 @@ FOUNDATION_EXPORT NSString *const kResponseMessages;
 FOUNDATION_EXPORT NSString *const kResponseHeader;
 
 // Error Keys
-FOUNDATION_EXPORT NSString * const kFSChatManagerErrorDomain;
-FOUNDATION_EXPORT NSString * const kErrorFailedToGetHeader;
-FOUNDATION_EXPORT NSString * const kErrorAlreadyInUse;
+FOUNDATION_EXPORT NSString *const kFSChatManagerErrorDomain;
+FOUNDATION_EXPORT NSString *const kErrorFailedToGetHeader;
+FOUNDATION_EXPORT NSString *const kErrorAlreadyInUse;
 
 // Chat Keys
 FOUNDATION_EXPORT NSString *const kChatHeader;
@@ -35,6 +35,7 @@ FOUNDATION_EXPORT NSString *const kHeaderLastMessage;
 FOUNDATION_EXPORT NSString *const kHeaderTimeStamp;
 FOUNDATION_EXPORT NSString *const kHeaderCreatedAt;
 FOUNDATION_EXPORT NSString *const kHeaderUsers;
+FOUNDATION_EXPORT NSString *const kHeaderMessageCount;
 
 // Message Keys
 FOUNDATION_EXPORT NSString *const kMessageSentTo;
@@ -124,7 +125,8 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion;
 /*!
  Get All ChatHeaders
  */
-- (void) getChatHeadersWithCompletionBlock:(void (^)(NSArray * headers, NSError * error))completion;
+- (void) getChatHeadersForUserId:(NSString *)userId
+             WithCompletionBlock:(void (^)(NSArray * headers, NSError * error))completion;
 
 #pragma mark CHAT SESSION
 
