@@ -1,9 +1,9 @@
 FireSuite
 =========
 
-#ALPHA
-
 A set of classes to monitor connections / presence, p2p chats, and a user to user alerts stream on the Firebase backend.
+
+** Please note that these classes are still being developed and they have not been fully debugged **
 
 ## Chat QuickStart
 
