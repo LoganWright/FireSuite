@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Firesuite by LoganWright</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Firesuite</h1>
+        <p>A set of classes to monitor connections / presence, p2p chats, and a user to user alerts stream.</p>
+
+        <p class="view"><a href="https://github.com/LoganWright/FireSuite">View the Project on GitHub <small>LoganWright/FireSuite</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/LoganWright/FireSuite/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/LoganWright/FireSuite/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/LoganWright/FireSuite">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="firesuite" class="anchor" href="#firesuite"><span class="octicon octicon-link"></span></a>FireSuite</h1>
+
+<p>A set of classes to monitor connections / presence, p2p chats, and a user to user alerts stream on the Firebase backend.</p>
+
+<p>** Please note that these classes are still being developed and they have not been fully debugged **</p>
+
+<h2>
+<a name="chat-quickstart" class="anchor" href="#chat-quickstart"><span class="octicon octicon-link"></span></a>Chat QuickStart</h2>
+
+<h3>
+<a name="step-1-declare-fschatmanagerdelegateprotocol" class="anchor" href="#step-1-declare-fschatmanagerdelegateprotocol"><span class="octicon octicon-link"></span></a>Step 1: Declare FSChatManagerDelegateProtocol</h3>
+
+<p>In ViewController.h</p>
+
+<div class="highlight highlight-ObjC"><pre><span class="cp">#import "FireSuite.h"</span>
+
+<span class="k">@interface</span> <span class="nc">ViewController</span> : <span class="nc">UIViewController</span> <span class="o">&lt;</span><span class="n">FSChatManagerDelegate</span><span class="o">&gt;</span>
+
+<span class="k">@end</span>
+</pre></div>
+
+<p>In ViewController.m</p>
+
+<div class="highlight highlight-ObjC"><pre><span class="cp">#pragma mark CHAT MANAGER DELEGATE</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">newMessageReceived:</span><span class="p">(</span><span class="n">NSMutableDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">newMessage</span> <span class="p">{</span>
+    <span class="n">NSLog</span><span class="p">(</span><span class="s">@"Received New Message: %@"</span><span class="p">,</span> <span class="n">newMessage</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">([</span><span class="n">newMessage</span><span class="p">[</span><span class="n">kMessageContent</span><span class="p">]</span> <span class="n">isEqualToString</span><span class="o">:</span><span class="s">@"Hello World!"</span><span class="p">])</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@"Hello Firebase!"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">chatSessionLoadDidFinishWithResponse:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">response</span> <span class="p">{</span>
+    <span class="n">NSDictionary</span> <span class="o">*</span> <span class="n">header</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="n">kResponseHeader</span><span class="p">];</span>
+    <span class="n">NSArray</span> <span class="o">*</span> <span class="n">retrievedMessages</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="n">kResponseMessages</span><span class="p">];</span>
+
+    <span class="n">NSLog</span><span class="p">(</span><span class="s">@"Retrieved Header: %@ andMessages: %@"</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">retrievedMessages</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">chatSessionLoadDidFailWithError:</span><span class="p">(</span><span class="n">NSError</span><span class="o">*</span><span class="p">)</span><span class="nv">error</span> <span class="p">{</span>
+    <span class="n">NSLog</span><span class="p">(</span><span class="s">@"loadDidFail: %@"</span><span class="p">,</span> <span class="n">error</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">sendMessage:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">message</span> <span class="nf">didFailWithError:</span><span class="p">(</span><span class="n">NSError</span> <span class="o">*</span><span class="p">)</span><span class="nv">error</span> <span class="p">{</span>
+     <span class="n">NSLog</span><span class="p">(</span><span class="s">@"sendMessage: %@ DidFail: %@"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">error</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+<h3>
+<a name="step-2-initialize-firesuite" class="anchor" href="#step-2-initialize-firesuite"><span class="octicon octicon-link"></span></a>Step 2: Initialize FireSuite</h3>
+
+<div class="highlight highlight-ObjC"><pre><span class="p">[</span><span class="n">FireSuite</span> <span class="n">setFirebaseURL</span><span class="o">:</span><span class="s">@"https://someFirebase.firebaseIO.com/"</span><span class="p">];</span>
+<span class="p">[</span><span class="n">FireSuite</span> <span class="n">setCurrentUserId</span><span class="o">:</span><span class="s">@"currentUserId"</span><span class="p">];</span>
+</pre></div>
+
+<h3>
+<a name="step-3-create-chat" class="anchor" href="#step-3-create-chat"><span class="octicon octicon-link"></span></a>Step 3: Create Chat</h3>
+
+<div class="highlight highlight-ObjC"><pre><span class="n">FSChatManager</span> <span class="o">*</span> <span class="n">chatManager</span> <span class="o">=</span> <span class="p">[</span><span class="n">FireSuite</span> <span class="n">chatManager</span><span class="p">];</span>
+<span class="n">chatManager</span><span class="p">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="n">self</span><span class="p">;</span>
+
+<span class="c1">// Create New Chat For @"currentUserId", @"anotherUserId"</span>
+<span class="c1">// Set CustomId to nil for AutoId</span>
+<span class="p">[</span><span class="n">chatManager</span> <span class="n">createNewChatForUsers</span><span class="o">:</span><span class="p">@[</span><span class="s">@"currentUserId"</span><span class="p">,</span> <span class="s">@"anotherUserId"</span><span class="p">]</span>
+                      <span class="nl">withCustomId:</span><span class="nb">nil</span>
+                <span class="nl">andCompletionBlock:</span><span class="o">^</span><span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">newChatId</span><span class="p">,</span> <span class="n">NSError</span> <span class="o">*</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+                     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+
+                        <span class="c1">// ------- LOAD NEW CHAT SESSION ------ //</span>
+                        <span class="p">[</span><span class="n">chatManager</span> <span class="n">loadChatSessionWithChatId</span><span class="o">:</span><span class="n">newChatId</span> <span class="n">andNumberOfRecentMessages</span><span class="o">:</span><span class="mi">50</span><span class="p">];</span>
+                        <span class="c1">// Start New Chat Session w/ the new chat Id and Max Number Of Recent Messages To Retrieve from the server</span>
+
+                     <span class="p">}</span>
+               <span class="p">}];</span>
+
+</pre></div>
+
+<h3>
+<a name="step-4-send-a-message" class="anchor" href="#step-4-send-a-message"><span class="octicon octicon-link"></span></a>Step 4: Send A Message:</h3>
+
+<div class="highlight highlight-ObjC"><pre><span class="p">[[</span><span class="n">FireSuite</span> <span class="n">chatManager</span><span class="p">]</span> <span class="n">sendNewMessage</span><span class="o">:</span><span class="s">@"Hello World!"</span><span class="p">];</span>
+</pre></div>
+
+<p>You'll receive the callback through delegate:</p>
+
+<pre><code>// On Success
+- (void) newMessageReceived:(NSDictionary *)newMessage;
+
+// On Error
+- (void) sendMessage:(NSDictionary *)message didFailWithError:(NSError *)error;
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/LoganWright">LoganWright</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
