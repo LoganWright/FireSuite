@@ -45,6 +45,10 @@
                                          andNumberOfRecentMessages:50];
                         }
                     }];
+    
+    [chatManager getChatHeadersForUserId:@"currentUserId" WithCompletionBlock:^(NSArray *headers, NSError *error) {
+        NSLog(@"User is %i chats!", headers.count);
+    }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -79,8 +83,7 @@
     NSDictionary * header = response[kResponseHeader];
     NSArray * retrievedMessages = response[kResponseMessages];
     
-    NSLog(@"Retrieved Header: %@ andMessages: %@", header, retrievedMessages);
-    
+    NSLog(@"Retrieved Header: %@ andMessages: %i", header, retrievedMessages.count);
     
     // ** Sending A Message ** //
     [[FireSuite chatManager] sendNewMessage:@"Hello World!"];

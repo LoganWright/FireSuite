@@ -32,6 +32,7 @@ NSString *const kHeaderTimeStamp = @"timestamp";
 NSString *const kHeaderCreatedAt = @"createdAt";
 NSString *const kHeaderUsers = @"users";
 NSString *const kHeaderMessageCount = @"messageCount";
+NSString *const kHeaderChatId = @"chatId";
 
 // Message Keys
 NSString *const kMessageSentTo = @"sentTo";
@@ -105,16 +106,16 @@ NSString *const kMessageChatId = @"chatId";
     }
     
     /*
-    NSMutableDictionary * newChat = [NSMutableDictionary new];
-    if (users.count > 0) newChat[kChatUsers] = users;
-    
-    NSString * timeStamp = TimeStamp;
-    NSMutableDictionary * headerDict = [NSMutableDictionary new];
-    
-    for (NSString * str in users) {
-        headerDict[str] = timeStamp;
-    }
-    */
+     NSMutableDictionary * newChat = [NSMutableDictionary new];
+     if (users.count > 0) newChat[kChatUsers] = users;
+     
+     NSString * timeStamp = TimeStamp;
+     NSMutableDictionary * headerDict = [NSMutableDictionary new];
+     
+     for (NSString * str in users) {
+     headerDict[str] = timeStamp;
+     }
+     */
     
     
     NSString * timeStamp = TimeStamp;
@@ -128,6 +129,7 @@ NSString *const kMessageChatId = @"chatId";
     headerDict[kHeaderLastMessage] = @"";
     headerDict[kHeaderCreatedAt] = timeStamp; // will remain fixed
     headerDict[kHeaderMessageCount] = [NSNumber numberWithInt:0];
+    headerDict[kHeaderChatId] = newChatRef.name;
     
     // Set Header To Chat
     NSMutableDictionary * newChat = [NSMutableDictionary new];
@@ -155,13 +157,17 @@ NSString *const kMessageChatId = @"chatId";
 - (void) addChatWithId:(NSString *)chatId
                toUsers:(NSArray *)users
    withCompletionBlock:(void (^)(NSString * newChat, NSError * error))completion {
-    __block int count = 0;
+    
+    dispatch_group_t group = dispatch_group_create();
+    
+    __block NSMutableArray * errors = [NSMutableArray new];
     
     if (users.count > 0) {
         for (NSString * user in users) {
             NSString * user1URL = [NSString stringWithFormat:@"%@Users/%@/chats/", _urlRefString, user];
             Firebase * chatsRef = [[Firebase alloc]initWithUrl:user1URL];
             
+            dispatch_group_enter(group);
             [chatsRef runTransactionBlock:^FTransactionResult *(FMutableData *currentData) {
                 NSMutableArray * chatsArray;
                 
@@ -180,15 +186,11 @@ NSString *const kMessageChatId = @"chatId";
                 return [FTransactionResult successWithValue:currentData];
             } andCompletionBlock:^(NSError *error, BOOL committed, FDataSnapshot *snapshot) {
                 
-                count++;
-                if (!error) {
-                    if (count == users.count) {
-                        completion(chatId, nil);
-                    }
+                if (error) {
+                    [errors addObject:error];
                 }
-                else {
-                    completion(nil, error);
-                }
+                
+                dispatch_group_leave(group);
                 
             } withLocalEvents:NO];
             
@@ -197,6 +199,17 @@ NSString *const kMessageChatId = @"chatId";
     else {
         completion(chatId, nil);
     }
+    
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        
+        NSLog(@"Errors?: %@", (errors.count > 0) ? errors : @"CLEAR");
+        if (errors.count > 0) {
+            completion(nil, [errors firstObject]);
+        }
+        else {
+            completion(chatId, nil);
+        }
+    });
 }
 
 #pragma mark ADD USER TO CHAT
@@ -247,7 +260,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
 
 - (void) getChatHeadersForUserId:(NSString *)userId
              WithCompletionBlock:(void (^)(NSArray * headers, NSError * error))completion {
-
+    
     NSString * userChatsURL = [NSString stringWithFormat:@"%@Users/%@/chats/",_urlRefString, userId];
     Firebase * userChatsRef = [[Firebase alloc]initWithUrl:userChatsURL];
     
@@ -272,7 +285,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
     
     if (!_receivedHeadersArray) _receivedHeadersArray = [NSMutableArray new];
     
-    __block int blockCount = 0;
+    dispatch_group_t headerGroup = dispatch_group_create();
     
     for (NSString * chatIdString in headers) {
         
@@ -280,9 +293,8 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
         NSString * headerString = [NSString stringWithFormat:@"%@Chats/%@/header/",_urlRefString, chatIdString];
         Firebase * headerSnap = [[Firebase alloc]initWithUrl:headerString];
         
+        dispatch_group_enter(headerGroup);
         [headerSnap observeSingleEventOfType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-            
-            blockCount++;
             
             if (snapshot.value != [NSNull new]) {
                 [_receivedHeadersArray addObject:snapshot.value];
@@ -291,17 +303,20 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
             else {
                 NSLog(@"Chat doesn't exist: %@", chatIdString);
             }
-    
-            // Check if we've received everything we're expecting.
-            if (blockCount == headers.count) {
-                completion(_receivedHeadersArray, nil);
-                _receivedHeadersArray = nil;
-            }
+            
+            dispatch_group_leave(headerGroup);
             
         }];
     }
+    
+    dispatch_group_notify(headerGroup, dispatch_get_main_queue(), ^{
+        // do your completion stuff here
+        completion(_receivedHeadersArray, nil);
+        _receivedHeadersArray = nil;
+        NSLog(@"We're done getting our blocks!");
+    });
 }
-     
+
 #pragma mark START CHAT SESSION
 
 - (void) loadChatSessionWithChatId:(NSString *)chatId andNumberOfRecentMessages:(int)numberOfMessages {
@@ -326,10 +341,10 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
         // Opt 2 - End automatically
         
         /*
-        [self endChatSessionWithCompletionBlock:^(NSError *error) {
-            [self loadChatSessionWithChatId:chatId andNumberOfRecentMessages:numberOfMessages];
-        }];
-        */
+         [self endChatSessionWithCompletionBlock:^(NSError *error) {
+         [self loadChatSessionWithChatId:chatId andNumberOfRecentMessages:numberOfMessages];
+         }];
+         */
         
         return;
     }
@@ -626,7 +641,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
 }
 
 - (void) updateHeaderWithMessage:(NSMutableDictionary *)message {
-
+    
     // Create Header Ref If Necessary
     if (!_chatHeaderRef) {
         NSString * headerRefString = [NSString stringWithFormat:@"%@Chats/%@/header/", _urlRefString, _chatId];
@@ -652,7 +667,7 @@ withCompletionBlock:(void (^)(NSString * chatId, NSError * error))completion {
                     
                 }
             }
-                
+            
             // Is Our Message Newer?
             if ([message[kMessageTimestamp] doubleValue] > [header[kHeaderTimeStamp] doubleValue]) {
                 

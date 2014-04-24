@@ -36,6 +36,7 @@ FOUNDATION_EXPORT NSString *const kHeaderTimeStamp;
 FOUNDATION_EXPORT NSString *const kHeaderCreatedAt;
 FOUNDATION_EXPORT NSString *const kHeaderUsers;
 FOUNDATION_EXPORT NSString *const kHeaderMessageCount;
+FOUNDATION_EXPORT NSString *const kHeaderChatId;
 
 // Message Keys
 FOUNDATION_EXPORT NSString *const kMessageSentTo;
